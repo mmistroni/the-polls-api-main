@@ -12,7 +12,7 @@ email-validator==2.1.0
 exceptiongroup==1.2.0
 fastapi==0.108.0
 frozenlist==1.4.1
-h11==0.14.0
+h11
 idna==3.6
 multidict==6.0.4
 pydantic==2.5.3
