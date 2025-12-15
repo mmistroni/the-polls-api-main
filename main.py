@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from app.api import polls
+from app.models import polls
 import uvicorn
 #from app.api import votes, danger, exceptions
-
+from app.models.polls import Poll
+import logging
 
 app = FastAPI(
     title="Polls API",
@@ -42,3 +43,9 @@ app.include_router(votes.router, prefix="/vote", tags=["votes"])
 @app.get('/test')
 def test():
     return {'message' : 'Hello there'}
+
+@app.post('/polls/create')
+def create_polls():
+    logging.info('=== Creating Polls====')
+    return Poll(options=['One', 'Two', 'Three'])
+    
