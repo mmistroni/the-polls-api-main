@@ -45,7 +45,7 @@ def test():
     return {'message' : 'Hello there'}
 
 @app.post('/polls/create')
-def create_polls():
+def create_polls(input:Poll) -> Poll:
     logging.info('=== Creating Polls====')
-    return Poll(options=['One', 'Two', 'Three'])
+    return Poll(options=['One', 'Two', 'Three'], title=input.title)
     
