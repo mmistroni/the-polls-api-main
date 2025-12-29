@@ -3,7 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from app.models import polls
 import uvicorn
 #from app.api import votes, danger, exceptions
-from app.models.polls import Poll
+from app.models.polls import Poll, PollCreate
 import logging
 
 app = FastAPI(
@@ -45,7 +45,7 @@ def test():
     return {'message' : 'Hello there'}
 
 @app.post('/polls/create')
-def create_polls(input:Poll) -> Poll:
+def create_polls(input:PollCreate) -> Poll:
     logging.info('=== Creating Polls====')
-    return Poll(options=['One', 'Two', 'Three'], title=input.title)
+    return PollCreate(options=['One', 'Two', 'Three'], title=input.title)
     
