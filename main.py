@@ -45,7 +45,12 @@ def test():
     return {'message' : 'Hello there'}
 
 @app.post('/polls/create')
-def create_polls(input:PollCreate) -> Poll:
+def create_polls(poll:PollCreate):
     logging.info('=== Creating Polls====')
-    return PollCreate(options=['One', 'Two', 'Three'], title=input.title)
+    new_poll = poll.create_poll()
+    return {
+        "detail" : "Poll successfully created",
+        "poll_id" : new_poll.id
+        
+    }
     
