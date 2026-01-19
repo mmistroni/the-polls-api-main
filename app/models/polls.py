@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from uuid import UUID, uuid4
 from typing import List, Optional
 from .choice import Choice
+from fastapi import HTTPException
 
 class PollCreate(BaseModel):
     """Poll write data model"""
@@ -26,7 +27,13 @@ class PollCreate(BaseModel):
         choices = [Choice(label=idx + 1, description=desc) for 
                     idx, desc in enumerate(self.options)]
         if self.expires_at is not None and self.expires_at < datetime.now(timezone.utc):
-            raise ValueError("Expires at must be in the future")
+            raise HTTPException(
+                status_code=400,
+                detail="A poll's expiration must be in the fuutre"
+            )
+        
+        
+        ValueError("Expires at must be in the future")
         return Poll(title=self.title, expires_at=self.expires_at,
                         options=choices)
 
