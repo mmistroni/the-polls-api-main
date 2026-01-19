@@ -15,7 +15,11 @@ class PollCreate(BaseModel):
     @classmethod
     def validate_options(cls, v : List[str]) -> List[str]:
         if len(v) < 2 or len(v) > 5:
-            raise ValueError("a poll must contain between 2 and 5 items")
+            #raise ValueError("a poll must contain between 2 and 5 items")
+            raise HTTPException(
+                status_code=400,
+                detail="a poll must contain between 2 and 5 items"
+            )
         return v
 
     def create_poll(self) -> "Poll":
