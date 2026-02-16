@@ -5,6 +5,7 @@ import uvicorn
 #from app.api import votes, danger, exceptions
 from app.models.polls import Poll, PollCreate
 import logging
+import os
 
 app = FastAPI(
     title="Polls API",
@@ -55,3 +56,9 @@ def create_polls(poll:PollCreate):
         
     }
     
+from upstash_redis import Redis
+
+redis_client = Redis(
+    url=os.environ['KV_URL'],
+    token=os.environ9['KV_REST_API_URL']
+    )
