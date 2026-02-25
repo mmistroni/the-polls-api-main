@@ -60,5 +60,15 @@ from upstash_redis import Redis
 
 redis_client = Redis(
     url=os.environ['KV_URL'],
-    token=os.environ9['KV_REST_API_URL']
+    token=os.environ['KV_REST_API_URL']
     )
+
+@app.post('/redis/save')
+def save_redis(id: str, name:str):
+    redis_client.set(id, name)
+    return {'status' : 'success'}
+
+@app.get("/redis/get/{id}")
+def get_redis(id:str):
+    name = redis_client.get(id)
+    return {"id" : id, "name":name}
