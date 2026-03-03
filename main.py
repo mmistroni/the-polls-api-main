@@ -57,10 +57,10 @@ def create_polls(poll:PollCreate):
     }
     
 from upstash_redis import Redis
-
+print
 redis_client = Redis(
-    url=os.environ['KV_URL'],
-    token=os.environ['KV_REST_API_URL']
+    url=os.environ['KV_REST_API_URL'],
+    token=os.environ['KV_REST_API_TOKEN']
     )
 
 @app.post('/redis/save')
