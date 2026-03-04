@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from app.models import polls
+from app.services import utils
 import uvicorn
 #from app.api import votes, danger, exceptions
 from app.models.polls import Poll, PollCreate
@@ -49,6 +50,10 @@ def test():
 def create_polls(poll:PollCreate):
     logging.info('=== Creating Polls====')
     new_poll = poll.create_poll()
+    
+    logging.info('Saving into redis...')
+    utils.save_poll(new_poll)
+    
     return {
         "detail" : "Poll successfully created",
         "poll_id" : new_poll.id,
@@ -56,19 +61,19 @@ def create_polls(poll:PollCreate):
         
     }
     
-from upstash_redis import Redis
-print
-redis_client = Redis(
-    url=os.environ['KV_REST_API_URL'],
-    token=os.environ['KV_REST_API_TOKEN']
-    )
+@app.get('/polls/{id}')
+def read_poll(id: str):
+    """Fetch a poll by its unique identifier.
 
-@app.post('/redis/save')
-def save_redis(id: str, name:str):
-    redis_client.set(id, name)
-    return {'status' : 'success'}
+    The path parameter ``id`` is a string representation of the UUID used as
+    the key in Redis.  If the poll cannot be found the endpoint raises a
+    ``404`` error.
+    """
+    logging.info(f"Fetching poll {id} from redis")
+    poll = utils.get_poll(f'poll:{id}')
+    if poll is None:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Poll not found")
+    return poll
 
-@app.get("/redis/get/{id}")
-def get_redis(id:str):
-    name = redis_client.get(id)
-    return {"id" : id, "name":name}
+
