@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from app.models import polls
 from app.services import utils
+from uuid import UUID
 import uvicorn
 #from app.api import votes, danger, exceptions
 from app.models.polls import Poll, PollCreate
@@ -62,7 +63,7 @@ def create_polls(poll:PollCreate):
     }
     
 @app.get('/polls/{id}')
-def read_poll(id: str):
+def read_poll(id: UUID):
     """Fetch a poll by its unique identifier.
 
     The path parameter ``id`` is a string representation of the UUID used as
@@ -73,7 +74,7 @@ def read_poll(id: str):
     poll = utils.get_poll(id)
     if poll is None:
         from fastapi import HTTPException
-        raise HTTPException(status_code=404, detail="Poll not found")
+        raise HTTPException(status_code=404, detail=f"Poll for id {id} was not found")
     return poll
 
 
