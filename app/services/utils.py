@@ -1,5 +1,7 @@
 from upstash_redis import Redis
 from app.models.polls import Poll, PollCreate
+from typing import Optional
+
 
 import os
 redis_client = Redis(
@@ -12,7 +14,7 @@ def save_poll(poll: Poll) -> Poll:
     return poll
 
 
-def get_poll(id: str) -> Poll | None:
+def get_poll(id: str) -> Optional[Poll]:
     """Retrieve a poll by its id from Redis.
 
     Returns the stored object if found or ``None`` if the key does not
@@ -23,5 +25,5 @@ def get_poll(id: str) -> Poll | None:
     # simply forward what the client returns; serialization behavior is
     # controlled by the Upstash client configuration (it will decode JSON
     # automatically if the value was set as a Pydantic model).
-    obj =  redis_client.get(id)
+    obj =  redis_client.get(f"poll:{poll.id}")
     return Poll.model_validate_json(obj) if obj is not None else None
