@@ -25,5 +25,7 @@ def get_poll(id: str) -> Optional[Poll]:
     # simply forward what the client returns; serialization behavior is
     # controlled by the Upstash client configuration (it will decode JSON
     # automatically if the value was set as a Pydantic model).
-    obj =  redis_client.get(f"poll:{poll.id}")
-    return Poll.model_validate_json(obj) if obj is not None else None
+    poll_json =  redis_client.get(f"poll:{id}")
+    if poll_json:
+        return Poll.model_validate_json(poll_json)
+    return None
