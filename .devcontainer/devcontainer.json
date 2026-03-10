@@ -1,10 +1,8 @@
 {
   "name": "Python Environment",
   "image": "mcr.microsoft.com/devcontainers/python:3.11",
-  // Or specify a different stable Python version, e.g., ":3.10"
 
   "settings": {
-    // Set the default Python interpreter path to the virtual environment
     "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python"
   },
 
@@ -14,8 +12,18 @@
     "vscode": {
       "extensions": [
         "ms-python.python",
-        "ms-python.vscode-pylance"
+        "ms-python.vscode-pylance",
+        "Postman.postman-for-vscode" 
       ]
     }
-  }
+  },
+
+  // This helps resolve issues with Codespace environment variables
+  "remoteEnv": {
+    "PYTHONPATH": "${containerWorkspaceFolder}",
+    "APP_ENV": "development"
+  },
+
+  // Ensures your API port is visible to the Postman extension
+  "forwardPorts": [8000] 
 }
