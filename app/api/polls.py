@@ -29,7 +29,7 @@ def read_poll(poll_id: UUID):
     ``404`` error.
     """
     logging.info(f"Fetching poll {poll_id} from redis")
-    poll = utils.get_poll(id)
+    poll = utils.get_poll(poll_id)
     if poll is None:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail=f"Poll for id {poll_id} was not found")
