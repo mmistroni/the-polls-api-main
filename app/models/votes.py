@@ -1,41 +1,36 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, EmailStr
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 from typing import List, Optional
-from .choice import Choice
+from .choice import Choice, ChoiceCreate
 from fastapi import HTTPException
 from .choice import Choice
 
 
-class VoteCreate(BaseModel):
-    """ Vote write data models"""
-    voted_at:datetime = Field(default_factory=lambda : datetime.now(timezone.utc))
-
-class Voter(VoteCreate):
+class Voter(BaseModel):
     """ Voter read data model"""
-    email:str = Field(email=True)
+    email:str = EmailStr
 
+class VoterCreate(BaseModel):
+    """ Voter write data model"""
+    voted_at:datetime = Field(default_factory=lambda : datetime.now(timezone.utc))
 
 
 class Vote(BaseModel):
     """ Vote read data model"""
     poll_id:UUID
-    choice_id:Choice
-    voter:Voter
+    choice_id:UUID
+    voter:VoterCreate
 
-class VoteUUIDWrite(Vote):
+class VoteByID(BaseModel):
     """ Vote write data model for uuid labels"""
     choice_id:UUID
+    voter:VoterCreate
 
 
-    def create_vote(self) -> "Vote ":
-        """
-        Creates a new Vote from a choice UUID 
-        
-        :param self: Description
-        """
-        
+class VoteByLabel(BaseModel):
+    """ Vote write data model for int labels"""
+    choice_label:int
+    voter:VoterCreate
 
-        return Vote(poll_id=self.poll_id, choice_id=self.choice_id, voter=self.voter)
-
-
+    
