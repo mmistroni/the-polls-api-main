@@ -5,26 +5,21 @@ from uuid import UUID
 import logging
 router = APIRouter()
 
-@router.post('/create_vote_by_id')
-def create_vote(voter:Voter, vote_by_id:VoteByID):
-    logging.info('=== Creating Polls====')
+@router.post('/vote/{poll_id}/id')
+def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
+    logging.info('=== Voting By Id====')
     
     logging.info('Saving into redis...')
     #utils.save_poll(new_poll)
     
-    return {
-        
-    }
+    return {"message": "Vote recorded"}
     
-@router.post('/create_vote_by_label')
-def create_vote(voter:Voter, vote_by_label:VoteByLabel):
-    logging.info('=== Creating Polls====')
+@router.post('/vote/{poll_id}/label')
+def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
+    logging.info('=== Voting By Label====')
     
     logging.info('Saving into redis...')
-    utils.save_poll(new_poll)
     
-    return {
-        
-    }
+    return {"message": "Vote recorded"}
 
 

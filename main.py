@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 import uvicorn
 #from app.api import votes, danger, exceptions
-from app.api import polls
+from app.api import polls, votes
 from app.models.polls import Poll, PollCreate
 import logging
 import os
@@ -35,7 +35,7 @@ app = FastAPI(
 
 app.include_router(polls.router, prefix="/polls", tags=["polls"])
 #app.include_router(danger.router, prefix="/polls", tags=["danger"])
-#app.include_router(votes.router, prefix="/vote", tags=["votes"])
+app.include_router(votes.router, prefix="/vote", tags=["votes"])
 
 # Objective:
 # - reshape the pydantic error messages into custom messages that only
