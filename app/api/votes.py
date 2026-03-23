@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter
 from app.models.votes import Vote, VoteByID, VoteByLabel, Voter, VoterCreate
 from app.services import utils
 from uuid import UUID   
@@ -9,10 +9,11 @@ router = APIRouter()
 def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
     logging.info('=== Voting By Id====')
     
-    logging.info('Saving into redis...')
+    logging.info('Saving into redis..xxx.')
     vote = Vote(poll_id=poll_id, 
                 choice_id=vote_by_id.choice_id,
-                voter = VoterCreate())
+                voter = vote_by_id.voter)
+
 
     return vote.model_dump_json()
 
@@ -30,7 +31,7 @@ def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
                                              )
     vote = Vote(poll_id=poll_id, 
                 choice_id=choice_id,
-                voter = VoterCreate())
+                voter = vote_by_label.voter)
 
     return vote.model_dump_json()
 
