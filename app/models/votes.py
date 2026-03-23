@@ -20,7 +20,7 @@ class Vote(BaseModel):
     """ Vote read data model"""
     poll_id:UUID
     choice_id:UUID
-    voter:VoterCreate
+    voter:Voter
 
 class VoteByID(BaseModel):
     """ Vote write data model for uuid labels"""
