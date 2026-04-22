@@ -12,15 +12,16 @@ def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
     logging.info('Saving into redis..xxx.')
     vote = Vote(poll_id=poll_id, 
                 choice_id=vote_by_id.choice_id,
-                voter = vote_by_id.voter)
+                voter = Voter(
+                    **vote_by_id.voter.model_dump())
+    )
 
 
-    return vote.model_dump_json()
+    return {"message" : "Vote recorded",
+            "vote": vote
+            }
+            
 
-
-    #utils.save_poll(new_poll)
-    
-    return vote_by_id.model_dump_json()
     
 @router.post('/vote/{poll_id}/label')
 def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
@@ -31,8 +32,14 @@ def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
                                              )
     vote = Vote(poll_id=poll_id, 
                 choice_id=choice_id,
-                voter = vote_by_label.voter)
+                voter = Voter(
+                    **vote_by_label.voter
+                )
+            )
 
-    return vote.model_dump_json()
+    return {"message" : "Vote recorded",
+            "vote": vote
+            }
+    
 
 
