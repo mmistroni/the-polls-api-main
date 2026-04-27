@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.models.votes import Vote, VoteByID, VoteByLabel, Voter, VoterCreate
 from app.services import utils
 from uuid import UUID   
@@ -24,16 +24,20 @@ def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
 
     
 @router.post('/vote/{poll_id}/label')
-def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
+def vote_by_label(poll_id:UUID, vote:VoteByLabel):
     logging.info('=== Voting By Label====')
     logging.info('Saving into redis...')
     choice_id = utils.get_choice_id_by_label(poll_id, 
-                                             vote_by_label.choice_label
+                                             vote.choice_label
                                              )
+    if not choice_id:
+        raise HTTPException(
+            status_code = 400,
+            detail='Invalid choice provided')
     vote = Vote(poll_id=poll_id, 
                 choice_id=choice_id,
                 voter = Voter(
-                    **vote_by_label.voter
+                    **vote.voter.model_dump_json()
                 )
             )
 
