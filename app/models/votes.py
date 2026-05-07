@@ -9,9 +9,9 @@ from .choice import Choice
 
 class Voter(BaseModel):
     """ Voter read data model"""
-    email:str = EmailStr
+    email:EmailStr
 
-class VoterCreate(BaseModel):
+class VoterCreate(Voter):
     """ Voter write data model"""
     voted_at:datetime = Field(default_factory=lambda : datetime.now(timezone.utc))
 
