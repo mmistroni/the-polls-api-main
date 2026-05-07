@@ -37,7 +37,7 @@ def vote_by_label(poll_id:UUID, vote:VoteByLabel):
     vote = Vote(poll_id=poll_id, 
                 choice_id=choice_id,
                 voter = Voter(
-                    **vote.voter.model_dump_json()
+                    **vote.voter.model_dump()
                 )
             )
 
