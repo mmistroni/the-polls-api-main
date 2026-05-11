@@ -23,11 +23,11 @@ def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
 
     
 @router.post('/vote/{poll_id}/label')
-def vote_by_label(poll_id:UUID, vote:VoteByLabel):
+def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
     logging.info('=== Voting By Label====')
     logging.info('Saving into redis...')
     choice_id = utils.get_choice_id_by_label(poll_id, 
-                                             vote.choice_label
+                                             vote_by_label.choice_label
                                              )
     if not choice_id:
         raise HTTPException(
@@ -36,7 +36,7 @@ def vote_by_label(poll_id:UUID, vote:VoteByLabel):
     vote = Vote(poll_id=poll_id, 
                 choice_id=choice_id,
                 voter = Voter(
-                    **vote.voter.model_dump()
+                    **vote_by_label.voter.model_dump()
                 )
             )
     utils.save_vote(vote)
