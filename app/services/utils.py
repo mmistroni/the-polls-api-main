@@ -49,7 +49,7 @@ def get_vote(poll_id: UUID, voter_email: str) -> Optional[Vote]:
         return Vote.model_validate_json(vote_json)
     return None
 
-def save_poll(poll_id: UUID, vote: Vote) -> None:
+def save_vote(poll_id: UUID, vote: Vote) -> None:
     vote_json = vote.model_dump_json()
     redis_client.hset(f"votes:{poll_id}", vote.voter.email, vote_json)
     return None
