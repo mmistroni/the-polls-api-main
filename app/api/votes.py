@@ -9,6 +9,10 @@ router = APIRouter()
 def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
     logging.info('=== Voting By Id====')
     
+    if utils.get_vote(poll_id, vote_by_id.voter.email) is not None:
+        raise HTTPException(status_code=404, detail=f"Already voted!")
+
+
     logging.info('Saving into redis..xxx.')
     vote = Vote(poll_id=poll_id, 
                 choice_id=vote_by_id.choice_id,
@@ -25,6 +29,10 @@ def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
 @router.post('/vote/{poll_id}/label')
 def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
     logging.info('=== Voting By Label====')
+    
+    if utils.get_vote(poll_id, vote_by_label.voter.email) is not None:
+        raise HTTPException(status_code=404, detail=f"Already voted!")
+
     logging.info('Saving into redis...')
     choice_id = utils.get_choice_id_by_label(poll_id, 
                                              vote_by_label.choice_label

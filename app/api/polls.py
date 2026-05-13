@@ -9,7 +9,7 @@ router = APIRouter()
 def create_polls(poll:PollCreate):
     logging.info('=== Creating Polls====')
     new_poll = poll.create_poll()
-    
+        
     logging.info('Saving into redis...')
     utils.save_poll(new_poll)
     
