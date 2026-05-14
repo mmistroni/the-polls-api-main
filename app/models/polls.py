@@ -49,3 +49,8 @@ class Poll(PollCreate):
     id:UUID = Field(description="Unique id", default_factory=uuid4)
     options:List[Choice]
     created_at:Optional[datetime] = Field(default_factory=lambda : datetime.now(timezone.utc))
+
+    def is_active(self) -> bool:
+        if self.expires_at is None:
+            return True
+        return datetime.now() < self.expires_at
