@@ -9,13 +9,25 @@ router = APIRouter()
 @router.post('/vote/{poll_id}/id')
 def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
     logging.info('=== Voting By Id====')
+    poll = utils.get_poll(poll_id)
     
+    if not poll:
+        raise HTTPException(status_code=404, detail="The poll was not found")
+
     is_poll_active(poll_id)
 
     if utils.get_vote(poll_id, vote_by_id.voter.email) is not None:
         raise HTTPException(status_code=404, detail=f"Already voted!")
     
     
+    # Validating choices
+    choice_id = vote_by_id.choice_id
+    poll_choice_ids = [choice.id for choice in poll.options]
+    if choice_id not in  poll_choice_ids :
+        raise HTTPException(status_code=404, 
+                            detail=f"Invalid choice for poll.Should be one of {poll_choice_ids}")
+    
+
     logging.info('Saving into redis..xxx.')
     vote = Vote(poll_id=poll_id, 
                 choice_id=vote_by_id.choice_id,
@@ -33,6 +45,12 @@ def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
 def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
     logging.info('=== Voting By Label====')
     
+    poll = utils.get_poll(poll_id)
+    
+    if not poll:
+        raise HTTPException(status_code=404, detail="The poll was not found")
+
+
     is_poll_active(poll_id)
     
     if utils.get_vote(poll_id, vote_by_label.voter.email) is not None:
