@@ -36,12 +36,7 @@ def get_poll(poll_id: UUID) -> Optional[Poll]:
 
 def get_choice_id_by_label(poll_id: UUID, choice_label:int) -> Optional[UUID]:
     poll = get_poll(poll_id)
-    if not poll:
-        return None
-    for choice in poll.options:
-        if choice.label == choice_label:
-            return choice.id
-    return None
+    return get_choice_id_by_label_given_poll(choice_label, poll)
 
 def get_vote(poll_id: UUID, voter_email: str) -> Optional[Vote]:
     vote_json = redis_client.hget(f"votes:{poll_id}", voter_email)
@@ -52,4 +47,13 @@ def get_vote(poll_id: UUID, voter_email: str) -> Optional[Vote]:
 def save_vote(poll_id: UUID, vote: Vote) -> None:
     vote_json = vote.model_dump_json()
     redis_client.hset(f"votes:{poll_id}", vote.voter.email, vote_json)
+    return None
+
+def get_choice_id_by_label_given_poll(label:int, poll : Poll) -> Optional[UUID]:
+    if poll is None:
+        return None
+    
+    for choice in poll.options:
+        if choice.label == label:
+            return choice.id
     return None
