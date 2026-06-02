@@ -36,7 +36,7 @@ def get_poll(poll_id: UUID) -> Optional[Poll]:
 
 def get_choice_id_by_label(poll_id: UUID, choice_label:int) -> Optional[UUID]:
     poll = get_poll(poll_id)
-    return get_choice_id_by_label_given_poll(choice_label, poll)
+    return get_choice_id_by_label_given(choice_label, poll)
 
 def get_vote(poll_id: UUID, voter_email: str) -> Optional[Vote]:
     vote_json = redis_client.hget(f"votes:{poll_id}", voter_email)
@@ -49,7 +49,7 @@ def save_vote(poll_id: UUID, vote: Vote) -> None:
     redis_client.hset(f"votes:{poll_id}", vote.voter.email, vote_json)
     return None
 
-def get_choice_id_by_label_given_poll(label:int, poll : Poll) -> Optional[UUID]:
+def get_choice_id_by_label_given(label:int, poll : Poll) -> Optional[UUID]:
     if poll is None:
         return None
     

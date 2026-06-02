@@ -57,9 +57,7 @@ def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
         raise HTTPException(status_code=404, detail=f"Already voted!")
     
     logging.info('Saving into redis...')
-    choice_id = utils.get_choice_id_by_label(poll_id, 
-                                             vote_by_label.choice_label
-                                             )
+    choice_id = utils.get_choice_id_by_label_given(vote_by_label.choice_label, poll)
     if not choice_id:
         raise HTTPException(
             status_code = 400,
