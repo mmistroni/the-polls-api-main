@@ -1,24 +1,34 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.models.votes import Vote, VoteByID, VoteByLabel, Voter, VoterCreate
+from app.models.polls import Poll
 from app.services import utils
 from uuid import UUID   
 from datetime import datetime
+from typing import Union
 import logging
 router = APIRouter()
 
-@router.post('/vote/{poll_id}/id')
-def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
-    logging.info('=== Voting By Id====')
+
+def common_vote_validations(poll_id:UUID, vote: Union[VoteByID, VoteByLabel]) -> Poll:
     poll = utils.get_poll(poll_id)
-    
+    vote_by_email = vote.voter.email
     if not poll:
         raise HTTPException(status_code=404, detail="The poll was not found")
 
-    is_poll_active(poll_id)
+    if not poll.is_active():
+        raise HTTPException(status_code=404, detail=f"Poll has expired!")
 
-    if utils.get_vote(poll_id, vote_by_id.voter.email) is not None:
+    if utils.get_vote(poll_id, vote_by_email) is not None:
         raise HTTPException(status_code=404, detail=f"Already voted!")
     
+    return poll
+
+
+@router.post('/vote/{poll_id}/id')
+def vote_by_id(poll_id:UUID, 
+               vote_by_id:VoteByID,
+               poll: Poll = Depends(common_vote_validations)):
+    logging.info('=== Voting By Id====')
     
     # Validating choices
     choice_id = vote_by_id.choice_id
@@ -42,20 +52,10 @@ def vote_by_id(poll_id:UUID, vote_by_id:VoteByID):
 
     
 @router.post('/vote/{poll_id}/label')
-def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
+def vote_by_label(poll_id:UUID, 
+                  vote_by_label:VoteByLabel, 
+                  poll: Poll = Depends(common_vote_validations)):
     logging.info('=== Voting By Label====')
-    
-    poll = utils.get_poll(poll_id)
-    
-    if not poll:
-        raise HTTPException(status_code=404, detail="The poll was not found")
-
-
-    is_poll_active(poll_id)
-    
-    if utils.get_vote(poll_id, vote_by_label.voter.email) is not None:
-        raise HTTPException(status_code=404, detail=f"Already voted!")
-    
     logging.info('Saving into redis...')
     choice_id = utils.get_choice_id_by_label_given(vote_by_label.choice_label, poll)
     if not choice_id:
@@ -73,9 +73,6 @@ def vote_by_label(poll_id:UUID, vote_by_label:VoteByLabel):
             "vote": vote
             }
     
-def is_poll_active(poll_id:UUID) -> None :
-    if not  utils.get_poll(poll_id).is_active():
-         raise HTTPException(status_code=404, detail=f"Poll has expired!")
     
 
         
