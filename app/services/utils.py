@@ -3,7 +3,7 @@ from uuid import UUID
 from upstash_redis import Redis
 from app.models.polls import Poll, PollCreate
 from app.models.votes import Vote
-from typing import Optional
+from typing import Optional, List
 
 
 import os
@@ -57,3 +57,13 @@ def get_choice_id_by_label_given(label:int, poll : Poll) -> Optional[UUID]:
         if choice.label == label:
             return choice.id
     return None
+
+def get_all_polls() -> List[Poll]:
+    keys = redis_client.keys("poll:*")
+    polls = []
+    for key in keys:
+        poll_json = redis_client.get(key)
+        if poll_json:
+            polls.append(Poll.model_validate_json(poll_json))
+    return polls
+

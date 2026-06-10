@@ -19,7 +19,11 @@ def create_polls(poll:PollCreate):
         "poll" : new_poll
         
     }
-    
+@router.get('/browse')
+def browse_polls():
+    logging.info('=== Browsing Polls====')
+    return utils.get_all_polls()
+
 @router.get('/{poll_id}')
 def read_poll(poll_id: UUID):
     """Fetch a poll by its unique identifier.
