@@ -22,7 +22,10 @@ def create_polls(poll:PollCreate):
 @router.get('/browse')
 def browse_polls():
     logging.info('=== Browsing Polls====')
-    return utils.get_all_polls()
+    polls =  utils.get_all_polls()
+    if not polls:
+        raise HTTPException(status_code=404, detail="No polls found")   
+    return polls
 
 @router.get('/{poll_id}')
 def read_poll(poll_id: UUID):
