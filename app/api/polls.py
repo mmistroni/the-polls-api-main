@@ -19,7 +19,7 @@ def create_polls(poll:PollCreate):
         "poll" : new_poll
         
     }
-@router.get('/browse')
+@router.get('/')
 def browse_polls():
     logging.info('=== Browsing Polls====')
     polls =  utils.get_all_polls()
