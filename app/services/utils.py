@@ -58,7 +58,7 @@ def get_choice_id_by_label_given(label:int, poll : Poll) -> Optional[UUID]:
             return choice.id
     return None
 
-def get_all_polls() -> List[Poll]:
+def get_all_polls_slow() -> List[Poll]:
     keys = redis_client.keys("poll:*")
     polls = []
     for key in keys:
@@ -67,3 +67,12 @@ def get_all_polls() -> List[Poll]:
             polls.append(Poll.model_validate_json(poll_json))
     return polls
 
+
+def get_all_polls() -> List[Poll]:
+    keys = redis_client.keys("poll:*")
+    polls = []
+    poll_jsons = redis_client.mget(*keys)
+    for poll_json in poll_jsons:
+        if poll_json:
+            polls.append(Poll.model_validate_json(poll_json))
+    return polls
