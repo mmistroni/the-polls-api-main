@@ -29,7 +29,11 @@ def browse_polls(poll_status: PollStatus = PollStatus.ACTIVE):
         polls = [poll for poll in polls if poll.is_active()]
     elif poll_status == PollStatus.EXPIRED:
         polls = [poll for poll in polls if not poll.is_active()]
-    return polls    
+    return  {
+        "counts" : len(polls),
+        "polls" : polls
+    }
+
 
 @router.get('/{poll_id}')
 def read_poll(poll_id: UUID):
