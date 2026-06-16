@@ -1,3 +1,5 @@
+from enum import Enum
+
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
@@ -30,13 +32,17 @@ class PollCreate(BaseModel):
         """
         choices = [Choice(label=idx + 1, description=desc) for 
                     idx, desc in enumerate(self.options)]
-        if self.expires_at is not None and self.expires_at < datetime.now(timezone.utc):
-            raise HTTPException(
-                status_code=400,
-                detail="A poll's expiration must be in the fuutre"
-            )
-        
-        
+        if self.expires_at is not None:
+            expires_at = self.expires_at
+            if expires_at.tzinfo is None:
+                expires_at = expires_at.replace(tzinfo=timezone.utc)
+            if expires_at < datetime.now(timezone.utc):
+                raise HTTPException(
+                    status_code=400,
+                    detail="A poll's expiration must be in the fuutre"
+                )
+            self.expires_at = expires_at
+
         ValueError("Expires at must be in the future")
         return Poll(title=self.title, expires_at=self.expires_at,
                         options=choices)
@@ -53,4 +59,12 @@ class Poll(PollCreate):
     def is_active(self) -> bool:
         if self.expires_at is None:
             return True
-        return datetime.now() < self.expires_at
+        expires_at = self.expires_at
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        return datetime.now(timezone.utc) < expires_at
+
+class PollStatus(Enum):
+    ACTIVE = "active"
+    EXPIRED = "expired"     
+    ALL = "all"

@@ -42,7 +42,8 @@ def vote_by_id(poll_id:UUID,
     vote = Vote(poll_id=poll_id, 
                 choice_id=vote_by_id.choice_id,
                 voter = Voter(
-                    **vote_by_id.voter.model_dump())
+                    **vote_by_id.voter.model_dump()),
+                channel=vote_by_id.channel
     )
     utils.save_vote(poll_id, vote)
     return {"message" : "Vote recorded",
@@ -66,7 +67,8 @@ def vote_by_label(poll_id:UUID,
                 choice_id=choice_id,
                 voter = Voter(
                     **vote_by_label.voter.model_dump()
-                )
+                ),
+                channel=vote_by_label.channel
             )
     utils.save_vote(vote)
     return {"message" : "Vote recorded",

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.models.polls import Poll, PollCreate
+from app.models.polls import Poll, PollCreate, PollStatus
 from app.services import utils
 from uuid import UUID   
 import logging
@@ -20,12 +20,16 @@ def create_polls(poll:PollCreate):
         
     }
 @router.get('/')
-def browse_polls():
+def browse_polls(poll_status: PollStatus = PollStatus.ALL):
     logging.info('=== Browsing Polls====')
     polls =  utils.get_all_polls()
     if not polls:
         raise HTTPException(status_code=404, detail="No polls found")   
-    return polls
+    if poll_status == PollStatus.ACTIVE:
+        polls = [poll for poll in polls if poll.is_active()]
+    elif poll_status == PollStatus.EXPIRED:
+        polls = [poll for poll in polls if not poll.is_active()]
+    return polls    
 
 @router.get('/{poll_id}')
 def read_poll(poll_id: UUID):
