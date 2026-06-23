@@ -3,7 +3,7 @@ from uuid import UUID
 from upstash_redis import Redis
 from app.models.polls import Poll, PollCreate
 from app.models.votes import Vote
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 
 import os
@@ -81,3 +81,7 @@ def get_all_polls() -> List[Poll]:
         if poll_json:
             polls.append(Poll.model_validate_json(poll_json))
     return polls
+
+def get_vote_counts(poll_id: UUID) -> Dict[UUID, int]:         
+    vote_counts = redis_client.hgetall(f"vote_counts:{poll_id}")
+    return {UUID(choice_id): int(count) for choice_id, count in vote_counts.items()}

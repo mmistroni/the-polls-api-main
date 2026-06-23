@@ -24,7 +24,7 @@ def common_vote_validations(poll_id:UUID, vote: Union[VoteByID, VoteByLabel]) ->
     return poll
 
 
-@router.post('/vote/{poll_id}/id')
+@router.post('/{poll_id}/id')
 def vote_by_id(poll_id:UUID, 
                vote_by_id:VoteByID,
                poll: Poll = Depends(common_vote_validations)):
@@ -52,7 +52,7 @@ def vote_by_id(poll_id:UUID,
             
 
     
-@router.post('/vote/{poll_id}/label')
+@router.post('/{poll_id}/label')
 def vote_by_label(poll_id:UUID, 
                   vote_by_label:VoteByLabel, 
                   poll: Poll = Depends(common_vote_validations)):
@@ -75,7 +75,13 @@ def vote_by_label(poll_id:UUID,
             "vote": vote
             }
     
-    
+@router.post('/{poll_id}/results')
+def get_results(poll_id:UUID):
+    logging.info(f'=== Voting Counts for:{poll_id}')
+    # Get the vote counts from Redis
+    return utils.get_vote_counts(poll_id)
+
+
 
         
 
